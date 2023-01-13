@@ -1,30 +1,41 @@
 class Resistor {
     r: number = 0;
-    constructor(r: number) {
+    m: number = 0;
+    constructor(r: number, m:number) {
         this.r = r;
+        this.m = m
     }
     getCurrent(u: number): number {
         return u / this.r;
     }
-    getPower(u: number): number {
-        return u * this.getCurrent(u);
+    getPower(): number {
+        return this.m * this.getCurrent(this.m);
     }
-    getAmps(w:number, v:number): number{
-        return w / v
+    getMax():number{
+        return Math.sqrt(this.getPower() * this.r)
     }
-    getOhms(w:number, v:number):number{
-        return v / this.getAmps(w, v)
+    checkMax():boolean{
+        return this.m<=this.getMax()
     }
-    getTemp(w:number, ml:number):number{
-        return Math.floor(20+(60/(4.19*(ml/w))))
-    }
-
 }
 
-let r1 = new Resistor(220);
-console.log(r1.getPower(5));
-console.log(r1.getAmps(6,4));
-console.log(r1.getOhms(6,4));
-console.log(r1.getTemp(1000, 1000));
-console.log(r1.getAmps(1000, 220));
-console.log(r1.getOhms(1000, 220));
+let r1 = new Resistor(400, 10);
+let r2 = new Resistor(330, 10);
+let r3 = new Resistor(320, 10);
+let r4 = new Resistor(470, 10);
+let r5 = new Resistor(110, 10);
+let resistors: Resistor[] = [r1,r2,r3,r4,r5]
+function filterResistors(): Resistor[]{
+    let allow: Resistor[] = [];
+    resistors.forEach((resistorr) => {
+        if (resistorr.checkMax()){
+            allow.push(resistorr)
+        }
+    })
+    return allow
+}
+
+console.log(r1);
+console.log(r1.getPower());
+console.log(r1.getMax())
+console.log(filterResistors())
