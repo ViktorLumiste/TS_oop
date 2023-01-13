@@ -1,41 +1,94 @@
 class Resistor {
     r: number = 0;
-    m: number = 0;
-    constructor(r: number, m:number) {
+    constructor(r: number) {
         this.r = r;
-        this.m = m
     }
     getCurrent(u: number): number {
         return u / this.r;
     }
-    getPower(): number {
-        return this.m * this.getCurrent(this.m);
+    getPower(u: number): number {
+        return u * this.getCurrent(u);
     }
-    getMax():number{
-        return Math.sqrt(this.getPower() * this.r)
-    }
-    checkMax():boolean{
-        return this.m<=this.getMax()
+    getResistance(): number {
+        return this.r;
     }
 }
 
-let r1 = new Resistor(400, 10);
-let r2 = new Resistor(330, 10);
-let r3 = new Resistor(320, 10);
-let r4 = new Resistor(470, 10);
-let r5 = new Resistor(110, 10);
-let resistors: Resistor[] = [r1,r2,r3,r4,r5]
-function filterResistors(): Resistor[]{
-    let allow: Resistor[] = [];
-    resistors.forEach((resistorr) => {
-        if (resistorr.checkMax()){
-            allow.push(resistorr)
-        }
-    })
-    return allow
+class SeriesCircuit {
+    resistors: Resistor[] = []
+    push(r: Resistor) {
+        this.resistors.push(r);
+    }
+    getTotalResistance() {
+        let sum: number = 0;
+        this.resistors.forEach((r: Resistor) => { sum += r.getResistance() });
+        return sum;
+    }
+    getCurrent(u: number) {
+        return u / this.getTotalResistance();
+    }
+    getTotalPower(v :number) {
+        let sum: number = 0
+        this.resistors.forEach((r: Resistor) => {
+            sum += r.getPower(v)
+        })
+        return sum
+    }
+    getBiggestOhm(){
+        let biggest: number = 0
+        this.resistors.forEach((res:Resistor)=> {
+            if(res.r > biggest){
+                biggest = res.r
+            }
+        })
+        return biggest
+    }
+    getBiggestVolt(v:number){
+        let biggest: number = 0
+        this.resistors.forEach((res:Resistor)=> {
+            if(v/3 > biggest){
+                biggest = v/3
+            }
+        })
+        return biggest
+    }
+    getBiggestWatt(v:number){
+        let biggest: number = 0
+        this.resistors.forEach((res:Resistor)=> {
+            if(res.getPower(v/3) > biggest){
+                biggest = res.getPower(v/3)
+            }
+        })
+        return biggest
+    }
+
 }
 
-console.log(r1);
-console.log(r1.getPower());
-console.log(r1.getMax())
-console.log(filterResistors())
+let sc1: SeriesCircuit = new SeriesCircuit();
+let sc2: SeriesCircuit = new SeriesCircuit();
+sc1.push(new Resistor(220));
+sc1.push(new Resistor(220));
+sc1.push(new Resistor(110));
+sc2.push(new Resistor(210))
+sc2.push(new Resistor(510))
+sc2.push(new Resistor(610))
+console.log(sc1.getTotalResistance());
+console.log(sc2.getTotalResistance());
+console.log("------")
+console.log(sc1.getCurrent(12));
+console.log(sc2.getCurrent(10));
+console.log("------")
+console.log(sc1.getTotalPower(12));
+console.log(sc2.getTotalPower(10));
+console.log("------")
+console.log(sc1.getBiggestOhm())
+console.log(sc2.getBiggestOhm())
+console.log("------")
+console.log(sc1.getBiggestVolt(5))
+console.log(sc2.getBiggestVolt(5))
+console.log("------")
+console.log(sc1.getBiggestWatt(5))
+console.log(sc2.getBiggestWatt(5))
+console.log("------")
+
+
